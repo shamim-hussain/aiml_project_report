@@ -33,6 +33,12 @@
 \usepackage{tabularx} 
 \usepackage{array}
 \usepackage[justification=centering]{caption}
+\usepackage{amsmath}
+
+\newcolumntype{P}[1]{>{\centering\arraybackslash}p{#1}}
+\newcolumntype{M}[1]{>{\centering\arraybackslash}m{#1}}
+
+\usepackage{stfloats}
 % declare the path(s) where your graphic files are
 \graphicspath{{figures/}}
 
@@ -107,8 +113,8 @@ We performed these manual annotations until we reached 4,000 clips for each supe
 
 \section{Results and Discussions}
 \input{tab_speed}
-% \input{tab_classperm}
-% \input{tab_conmat}
+\input{tab_classperm}
+\input{tab_conmat}
 
 
 \section{Conclusion and Future Work}
