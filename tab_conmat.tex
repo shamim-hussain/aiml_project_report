@@ -4,101 +4,84 @@
 
 \begin{table}
 	\centering
-	\caption{Normalized Confusion Matrices for Clips of Different Lengths (Rows: True Labels, Columns: Predicted labels, Ordering: Noise, Music, and Speech)}
+	\caption{Normalized Confusion Matrices for Clips of Different Lengths (Rows: True Labels, Columns: Predicted labels, Ordering: Speech, Music, and Noise. GST = Trained on Gold Standard Training Set, GST + UT = Trained on Gold Standard and Unchecked Training Set, GST + UT + FT = Trained on Gold Standard and Unchecked Training Set, Fine Tuned on Gold Standard Training Set)}
 	%\resizebox{\columnwidth}{!}{
-	\begin{tabular}{M{5.4em}P{6.5em}P{6.5em}P{6.5em}} 
+	\begin{tabular}{M{13em}P{6.5em}P{6.5em}P{6.5em}} 
 		
 		\toprule
-		\textbf{Network} & \textbf{0.5s} & \textbf{1.0s} & \textbf{2.0s} \\
+		\textbf{Network} & \textbf{1.0s} & \textbf{2.0s} & \textbf{4.0s} \\
 		
-		\midrule[1pt] 
-		\textbf{GMM} 
+		
+		\midrule
+		\textbf{SwishNet(GST)} 
 		& $\begin{bmatrix}
-		.79 & .19 & .02\\
-		.02 & .96 & .01\\
-		.01 & .01 & .98
+		.90 & .05 & .05\\
+		.02 & .92 & .06\\
+		.02 & .11 & .86
 		\end{bmatrix} $
 		& $\begin{bmatrix}
-		.80 & .18 & .01\\
-		.02 & .97 & .01\\
-		.01 & .00 & .99
+		.93 & .03 & .03\\
+		.01 & .94 & .05\\
+		.02 & .11 & .87
 		\end{bmatrix}$
 		& $\begin{bmatrix}
-		.79 & .18 & .02\\
-		.01 & .98 & .01\\
-		.00 & .00 & .99
+		.93 & .03 & .03\\
+		.01 & .94 & .05\\
+		.03 & .11 & .86
 		\end{bmatrix}$ \\
 		
 		\midrule
-		\textbf{SNN} 
+		\textbf{SwishNet(GST + UT)}
 		& $\begin{bmatrix}
-		.67 & .28 & .05\\
-		.01 & .98 & .02\\
-		.00 & .00 & 1.0
-		\end{bmatrix} $
-		& $\begin{bmatrix}
-		.67 & .28 & .05\\
-		.00 & .98 & .01\\
-		.00 & .00 & 1.0
-		\end{bmatrix}$
-		& $\begin{bmatrix}
-		.68 & .28 & .04\\
-		.00 & .99 & .01\\
-		.00 & .00 & 1.0
-		\end{bmatrix}$ \\
-		
-		\midrule
-		\textbf{SwishNet-slim (Undistilled)}
-		& $\begin{bmatrix}
-		.78 & .19 & .03\\
-		.01 & .98 & .01\\
-		.00 & .00 & .99
+		.97 & .01 & .02\\
+		.03 & .91 & .06\\
+		.06 & .05 & .89
 		\end{bmatrix}$ 
 		& $\begin{bmatrix}
-		.83 & .14 & .03\\
-		.01 & .99 & .00\\
-		.00 & .00 & 1.0
+		.98 & .01 & .01\\
+		.01 & .95 & .04\\
+		.06 & .06 & 0.88
 		\end{bmatrix}$
 		& $\begin{bmatrix}
-		.84 & .15 & .01\\
-		.01 & .99 & .00\\
-		.00 & .00 & .99
+		.96 & .03 & .01\\
+		.00 & .97 & .03\\
+		.06 & .08 & .86
 		\end{bmatrix}$\\
 		
 		\midrule
-		\textbf{SwishNet-wide (Distilled)} 
+		\textbf{SwishNet(GST + UT + FT)} 
 		& $\begin{bmatrix}
-		.81 & .17 & .02\\
-		.01 & .99 & .00\\
-		.00 & .00 & 1.0
+		.91 & .03 & .05\\
+		.01 & .92 & .07\\
+		.01 & .05 & .93
 		\end{bmatrix}$ & 
 		$\begin{bmatrix}
-		.86 & .13 & .01\\
-		.01 & .99 & .00\\
-		.00 & .00 & 1.0
+		.96 & .01 & .03\\
+		.01 & .95 & .03\\
+		.02 & .06 & .92
 		\end{bmatrix}$ 
 		& $\begin{bmatrix}
-		.88 & .11 & .01\\
-		.01 & .99 & .00\\
-		.00 & .00 & 1.0
+		.95 & .01 & .04\\
+		.01 & .95 & .04\\
+		.01 & .05 & .94
 		\end{bmatrix}$ \\
 		
 		\midrule 
-		\textbf{MobileNet} 
+		\textbf{VGG16 (GST + UT + FT)} 
 		& $\begin{bmatrix}
-		.90 & .09 & .01\\
-		.01 & .99 & .01\\
-		.00 & .00 & 1.0
+		.94 & .01 & .05\\
+		.01 & .94 & .05\\
+		.01 & .03 & .95
 		\end{bmatrix}$ 
 		& $\begin{bmatrix}
-		.91 & .09 & .01\\
-		.00 & .99 & .00\\
-		.00 & .00 & 1.0
+		.97 & .01 & .02\\
+		.00 & .98 & .02\\
+		.02 & .05 & .93
 		\end{bmatrix}$ 
 		& $\begin{bmatrix}
-		.94 & .06 & .00\\
-		.01 & .99 & .00\\
-		.00 & .00 & 1.0
+		.98 & .00 & .02\\
+		.00 & .97 & .03\\
+		.01 & .03 & .96
 		\end{bmatrix}$ \\
 		\bottomrule
 	\end{tabular}

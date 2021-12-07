@@ -46,7 +46,7 @@
 \addbibresource{citations/citations.bib}
 \addbibresource{citations/dnn.bib}
 
-\title{Project Report}
+\title{Project Report:\\Fast and Memory-Efficient Coarse-Grained Audio Classification using Deep Neural Network}
 
 \author{
 Md Shamim Hussain\\
@@ -67,12 +67,10 @@ Rensselaer Polytechnic Institute\\
 \maketitle
 
 \begin{abstract}
-  Deep neural networks are notorious for their high computational cost and memory requirements. Not only that, often they need specialized hardware for efficient execution. However, for simple tasks such as a coarse-grained classification of environmental sounds into superclasses such as speech, music, and noise, one may not be able to spare a lot of computational resources. Such situations may arise when real-time audio classification/segmentation needs to be performed - e.g., in hearing aids, or at the frontend of real-time audio compression systems. So, we aim to devise network architectures that are fast and memory-efficient for this problem. This architecture should perform well on the CPU with limited memory requirements.
+  Deep neural networks are notorious for their high computational cost and memory requirements. Not only that, often they need specialized hardware for efficient execution. However, for simple tasks such as a coarse-grained classification of sound into superclasses such as speech, music, and noise, one may not be able to spare a lot of computational resources. In this work, we devise a new convolutional network - SwishNetV2 which is fast and memory-efficient, but gets close to big convolutional networks such as VGG16 in terms of classification performance. This architecture improves upon the previous SwishNet architecture and performs well on the CPU with limited memory requirements, similar to its predecessor. We verified the performance of this model on the diverse Audioset dataset, with manually verified gold standard labels. We also devised a method for including data with unchecked noisy labels from AudioSet which improves classification performance. The code for our implimentation can be found at \url{https://github.com/shamim-hussain/audioset_coarse_grained_classification}.
 \end{abstract}
 
 \section{Introduction}
-Due to rapid increase in the amount of available audio data all over the world, time now demands an efficient method to automatically segment or/and classify audio stream based on its content. Audio classification typically refers to the assignment of the content of a given audio excerpt to a particular class. And audio segmentation refers to assigning different temporal regions of an audio content to different classes.  
-
 Music, speech and noise classification and segmentation is an important task because these three types of signals are inherently different in nature [9] and require different types of processing and/or coding schemes. For example, a good compression scheme for speech may not be good for compressing music. Also, the signal processing steps used for these two types of media are likely to be very different. So, correctly identifying the type of media before further processing should be considered a very important task. 
 
 On the advent of widespread use of the internet, it is now possible to build large media databases from user-contributed data. However, labels for the collected data are rarely available. Manual media labeling can be both expensive and time-consuming. So, a reliable method is required to automate the indexing of large media databases. It is intuitive to first classify/ segment the media into broad categories such as speech, music and noise which may be followed by further fine-grained classification/segmentation procedure (for example, into different musical genres). 
@@ -81,7 +79,23 @@ The above discussion suggests that it is desirable to bring the classification/s
 
 In recent years deep learning [10] algorithms have achieved unprecedented success in numerous classification problems, without any need for careful feature selection. Especially, deep convolutional neural networks have set new frontiers in many fields such as image and audio classification and segmentation. However, deep neural networks are generally known to be more computationally expensive and slower than other more conventional models. These models often need large-scale parallelization in GPUs for faster implementation. Since classification/segmentation is often set as a pre-processing step in an audio processing pipeline, it needs to be fast enough to prevent the delay in further processing. Also, the computational resources are limited in many scenarios such as in mobile devices and embedded systems where it is unreasonable to waste too much resource in the preprocessing step. This is where we put forth our contribution. 
 
+Such situations may arise when real-time audio classification/segmentation needs to be performed - e.g., in hearing aids, or at the frontend of real-time audio compression systems.
+
 In this work, we present SwishNet, a carefully designed novel 1D convolutional deep neural network architecture which can achieve a high level of accuracy while also being fast, lightweight and memory efficient, even without large-scale parallelization in a GPU. Also, the deep convolutional nature of the architecture allows it to pick up contextual information from previous frames effectively. It can be trained on a sufficiently diverse dataset such as the MUSAN corpus without the need for any specific feature engineering. And in the presence of new data (e.g. new musical genres), it can simply be fine-tuned without the need for retraining from scratch.
+
+\begin{figure*}[!t]
+	\centering
+	\includegraphics[width=\textwidth, trim= 0 230 0 100, clip]{Network.pdf}
+	\caption{Network Architecture of SwishNet-slim}
+	\label{fig:swishnet}
+\end{figure*}
+
+\begin{figure*}[!t]
+	\centering
+	\includegraphics[width=\textwidth, trim= 0 450 0 0, clip]{Pipeline.pdf}
+	\caption{Network Architecture of SwishNet-slim}
+	\label{fig:swishnet}
+\end{figure*}
 
 \section{Related Works}
 In general, audio content analysis in video parsing can be considered in two directions [5][6]. One is to discriminate audio streams into different classes such as speech, music, noise etc., the other is to classify audio streams into segments of different speakers. In this paper, our research work in the first direction will be presented. 

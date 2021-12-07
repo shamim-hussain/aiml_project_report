@@ -1,36 +1,30 @@
-\begin{table}[t]
+\begin{table}
 	\centering
-	\caption{Overall and Speech/Non-Speech (SNS) Classification Accuracy for Clips of Different Lengths}
-	\resizebox{\columnwidth}{!}{
-		\begin{tabular}{p{3em}p{4.1em}P{2.2em}P{2.2em}P{2.2em}P{2.2em}P{2.2em}P{2.2em}}
-			\toprule
-			\multicolumn{2}{p{8em}}{\textbf{Clip Length}} & \multicolumn{2}{M{6em}}{\textbf{0.5s}} & \multicolumn{2}{M{6em}}{\textbf{1.0s}} & \multicolumn{2}{M{6em}}{\textbf{2.0s}} \\
-			
-			\cmidrule(r{.25em}){1-2} \cmidrule(r{.25em}l){3-4} \cmidrule(r{.25em}l){5-6} \cmidrule(r{.25em}l){7-8} 
-			\textbf{Network} &  & \textbf{Overall} & \textbf{SNS} & \textbf{Overall} & \multicolumn{1}{p{1.1em}}{\textbf{SNS}} & \textbf{Overall} & \textbf{SNS} \\
-			
-			\midrule[1pt]
-			\textbf{GMM} &  & 96.53\% & 98.58\% & 97.33\% & 99.05\% & 97.79\% & 99.33\% \\
-			
-			\midrule
-			\textbf{SNN} &  & 97.07\% & 98.87\% & 97.41\% & 99.13\% & 97.71\% & 99.36\% \\
-			
-			\midrule
-			\multirow{2}{4em}{\textbf{Swish-Net-slim}} & \textbf{Undistilled} & 97.64\% & 99.24\% & 98.20\% & 99.60\% & 98.41\% & 99.76\% \\
-			
-			\cmidrule(l{0.5em}){2-8}          & \textbf{Distilled} & 97.52\% & 99.19\% & 98.22\% & 99.51\% & 98.57\% & 99.70\% \\
-			
-			\midrule
-			\multirow{2}{4em}{\textbf{Swish-Net-wide}} & \textbf{Undistilled} & 97.97\% & 99.37\% & 98.32\% & 99.67\% & 98.65\% & 99.75\% \\
-			
-			\cmidrule(l{0.5em}){2-8}          & \textbf{Distilled} & 98.05\% & 99.45\% & 98.54\% & 99.71\% & 98.92\% & 99.84\% \\
-			
-			\midrule
-			\multirow{2}{4em}{\textbf{Mobile-Net}} & \textbf{Random} & 98.13\% & 99.43\% & 98.53\% & 99.71\% & 98.95\% & 99.88\% \\
-			
-			\cmidrule(l{0.5em}){2-8}          & \textbf{Pretrained} & 98.94\% & 99.73\% & 99.24\% & 99.89\% & 99.38\% & 99.96\% \\
-			\bottomrule
-		\end{tabular}
-	}%
-	\label{tab:classperm}%
-\end{table}%
+	\caption{Overall Classification Accuracy (\%) for Clips of Different Lengths. (GST = Trained on Gold Standard Training Set, GST + UT = Trained on Gold Standard and Unchecked Training Set, GST + UT + FT = Trained on Gold Standard and Unchecked Training Set, Fine Tuned on Gold Standard Training Set)}
+	%\resizebox{\columnwidth}{!}{
+	\begin{tabular}{M{13em}P{6.5em}P{6.5em}P{6.5em}} 
+		
+		\toprule
+		\textbf{Network} & \textbf{1.0s} & \textbf{2.0s} & \textbf{4.0s} \\
+		
+		\midrule
+		\textbf{SwishNet (GST)} 
+        & 89.69\% & 91.50\% & 91.09\% \\
+		
+		\midrule
+		\textbf{SwishNet (GST + UT)}
+	    & 91.90\% & 93.42\% & 92.85\% \\
+		
+		\midrule
+		\textbf{SwishNet (GST + UT + FT)} 
+        & 92.45\% & 94.41\% & 94.54\% \\
+		
+		\midrule 
+		\textbf{VGG16 (GST + UT + FT)} 
+        & 94.72\% & 96.01\% & 96.57\% \\
+        
+		\bottomrule
+	\end{tabular}
+	%}
+	\label{tab:conmat}%
+\end{table}
