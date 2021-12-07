@@ -111,8 +111,24 @@ Next, we downloaded YouTube clips in uncompressed wav format which was later com
 To generate ground truth (gold standard) annotations for the clips we manually checked each clip and verified their plausible superclass. If we found that a clip’s superclass was ambiguous/wrong, it was tagged as ``bad'', otherwise it was tagged as ``good''. We performed these manual annotations until we reached 4,000 ``good'' clips for each superclass (speech, music, and noise). Thus, the gold standard (``good'') dataset contains 12,000 annotated unambiguous ground truth labeled clips. Also, the ambiguous (``bad'') labels are also kept for possible future use in automated label clean up. Our annotated dataset, along with unchecked clips is available publicly at \url{https://www.kaggle.com/snirjhar/audioset-speech-music-noise}. 
 
 \subsection{Feature Extraction}
+We extracted log mel spectrogram features and energy for each clip. Before that, silence portions of the audio clips were removed, since we do not consider silence in our classification task. Our derived features can be found at \url{https://www.kaggle.com/snirjhar/audioset-derived-features}. The MFCC features used in \cite{hussain2018swishnet} can be easily derived from these features.
 
 \subsection{Network Architecture}
+While 1D convolutional networks, like WaveNet \cite{VanDenOord2016b} can operate on raw audio, we trained our network on frame-wise extracted log mel spectrogram because processing raw audio input is infeasible in terms of computational cost and memory requirement for our problem. Note that SwishNet \cite{hussain2018swishnet} operates on MFCC features, which is more specialized but we found that log mel spectrogram features are more informative and thus results in better classification performance.
+	
+While SwishNet is a 1D convolutional network which operates on frame-wise MFCC features, our model has a single 2D convolutional base followed by 1D convolutions. The rationale behind this is that, the 2D convolution mimics a feature extraction stage, similar to MFCC but at the same time it is trainable. Max Pooling allows for slight invariance in both time and frequency dimensions. Similar to SwishNet, 1D convolutions are carried out along the temporal dimension only. The detailed network architecture of SwishNetV2 is shown in Fig. \ref{fig:swishnet}.
+	
+	
+After the 2D convolutional base we stacked two halves of the signal which effectively halves the time dimension and saves computational time. Similar to the original SwishNet architecture which follows the WaveNet \cite{VanDenOord2016b} architecture, we used multiple layers of causal convolutions to gradually increase the receptive field and gated activation functions \cite{VandenOord2016a} containing sigmoid and tanh functions instead of widely used ReLU activations. The gated activations allow the network to select which information to pass from one time step to the next, just like a gated recurrent network. It also conveniently cuts down the number of feature maps passing from one layer to the next to half.
+	
+	
+At lower layers we used longer filters. Since, longer dense filters are computationally and parametrically costly, here we used separable 1D convolutions \cite{Chollet2016} instead of dense convolution. These longer filters are followed by a series of dialated convolutions which exponentially increases the receptive field of the network.
+	
+\subsection{A 2D Convolutional Neural Network for Comparison - VGG16}
+The most widely used deep learning technique for audio classification is to apply a 2D convolutional network on the spectrogram or other derived features \cite{Sercu2016,Hershey2017,Takahashi2016}. However, to the best of our knowledge, no other deep learning scheme has specifically addressed classification/segmentation into all of the three classes - Music, Speech and noise under a single unified framework. So, for comparison, we sought an established 2D architecture that achieves highest performance for the task at hand.
+	
+For 2D convolutional networks, we treated the log mel spectrum as a 2D signal and convolutions were done along both frequency and time axes. Among the CNN architectures, we considered, VGG16 \cite{Simonyan2014} performed the best for the task at hand especially its initialized with ImageNet weights. It converges much faster and achieves higher accuracy when initialized with ImageNet weights rather than with random weights. So, this is a case of transfer learning \cite{Oquab2014} from the ImageNet dataset to the AudioSet dataset.
+To apply the pre-trained networks on log MFB spectrum, we copied the input along three input channels (Red, Green and Blue) which is equivalent to using a greyscale image. We only kept the convolutional parts of the networks and applied Global Average Pooling to the outputs. Then, we applied two dense layers ending in a softmax output.
 
 \section{Results and Discussions}
 \input{tab_speed}
