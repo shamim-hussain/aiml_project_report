@@ -95,12 +95,6 @@ There have been many studies on audio content analysis, using different features
 Many other works have been done to enhance audio classification algorithms. In \cite{kimber1997acoustic}, audio recordings are classified into speech, silence, laughter and non-speech sounds, to segment discussion recordings in meetings. The accuracy of the segmentation result using his method varies considerably for different types of recording. In the work by Zhang and Kuo \cite{zhang1999video}, pitch tracking methods are introduced to discriminate audio recordings into more classes, such as songs, speeches over music, with a heuristic-based model. Accuracy of above 90\% is reported. Srinivasan et al [5], try to detect and classify audio that consists of mixed classes, such as combinations of speech and music together with background sound. The accuracy of classification is over 80\%. 
 
 \section{Methodology}
-\begin{figure*}[!t]
-	\centering
-	\includegraphics[width=\textwidth, trim= 0 450 0 0, clip]{Pipeline.pdf}
-	\caption{Network Architecture of SwishNet-slim}
-	\label{fig:swishnet}
-\end{figure*}
 \subsection{Data Collection}
 The Audioset \cite{gemmeke2017audio} ontology was used to identify fine-grained sound event classes (source). We combined the fine-grained event classes into 3 major superclasses - speech, music and noise. We define each superclass uniquely by saying that a particular audio segment must not contain events from other superclasses, so that there is no ambiguity in classification. 
 
@@ -129,8 +123,32 @@ The most widely used deep learning technique for audio classification is to appl
 	
 For 2D convolutional networks, we treated the log mel spectrum as a 2D signal and convolutions were done along both frequency and time axes. Among the CNN architectures, we considered, VGG16 \cite{Simonyan2014} performed the best for the task at hand especially its initialized with ImageNet weights. It converges much faster and achieves higher accuracy when initialized with ImageNet weights rather than with random weights. So, this is a case of transfer learning \cite{Oquab2014} from the ImageNet dataset to the AudioSet dataset.
 To apply the pre-trained networks on log MFB spectrum, we copied the input along three input channels (Red, Green and Blue) which is equivalent to using a greyscale image. We only kept the convolutional parts of the networks and applied Global Average Pooling to the outputs. Then, we applied two dense layers ending in a softmax output.
+\begin{figure*}[!t]
+	\centering
+	\includegraphics[width=\textwidth, trim= 0 450 0 0, clip]{Pipeline.pdf}
+	\caption{Data preparation and feature extraction pipeline}
+	\label{fig:pipeline}
+\end{figure*}
 
 \section{Results and Discussions}
+\subsection{Description of the Dataset}
+The AudioSet dataset \cite{gemmeke2017audio} is compiled from annotated youtube videos, which must be collected from original youtube IDs. Often, if the content is not available on youtube, that particular clip must be ignored. It consists of approximately 5.8 thousand hours of audio in 527 categories.
+
+We downloaded around 83.6k audio clips. We encoded all the audio files into 22 kHz FLAC format. Our gold standard dataset contains 12,000 annotated ground truth labeled clips. There were also 66.5k unchecked clips.
+
+\subsection{Evaluation Strategy}
+We randomly split the gold standard dataset into a training and a test set in a stratified manner. 35\% of the clips were selected for the test set. Note that, we will use the unchecked clips with noisy labels in the future either for pretraining, or by refining their labels by some means. We randomly split the gold standard training dataset into 5 equally sized, stratified folds. We assigned only 1 of the folds as the validation set, and others were assigned to the "gold standard training" set. Alongside the gold standard training set, the unchecked were also used for training.
+
+The same preprocessing and data preparation steps were followed for all dataset splits. Silent parts of the files were removed using power thresholding. We segmented the files to form either 1s, 2s or 4s clips with 50\% overlap. The clips were framed into 25ms frames with 15ms overlap. 64 log mel filters were applied to each frame. The pipeline is shown in Fig. \ref{fig:pipeline}.
+
+\subsection{Optimization Strategy}
+In order to take advantage of the unchecked data while also not being biased by the noisy labels, we used a combination of pretraining on both unchecked and gold standard training data followed by finetuning on gold standard training data only.
+
+We trained SwishNetV2 for 100 epochs with the AdamW optimizer \cite{loshchilov2017decoupled} and a batch size of 256, 128 and 64 for 1s, 2s, 4s clips respectively on the combined training dataset (unchecked + gold standard training). The initial learning rate was set to 0.0005 and it was reduced by a factor of 0.5 if the validation loss didn't improve for 10 epochs. Finally, we finetuned the model on the gold standard training set for 10 epochs with a learning rate of 0.0005.
+
+VGG16 trained really fast when initialized with ImageNet weights and reached convergence within 10 epochs with the SGD optimizer with learning rate of 0.001 and a momentum of 0.5, on the combined training dataset. Then it was finetuned on the gold standard training set for 1 epoch.
+
+\subsection{Results}
 \input{tab_speed}
 \input{tab_classperm}
 \input{tab_conmat}
