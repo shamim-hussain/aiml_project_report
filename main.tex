@@ -45,6 +45,7 @@
 \usepackage[sorting=none]{biblatex}
 \addbibresource{citations/citations.bib}
 \addbibresource{citations/dnn.bib}
+\addbibresource{citations/library.bib}
 
 \title{Project Report:\\Fast and Memory-Efficient Coarse-Grained Audio Classification using Deep Neural Network}
 
@@ -71,29 +72,18 @@ Rensselaer Polytechnic Institute\\
 \end{abstract}
 
 \section{Introduction}
-Music, speech and noise classification and segmentation is an important task because these three types of signals are inherently different in nature [9] and require different types of processing and/or coding schemes. For example, a good compression scheme for speech may not be good for compressing music. Also, the signal processing steps used for these two types of media are likely to be very different. So, correctly identifying the type of media before further processing should be considered a very important task. 
+Music, speech and noise classification and segmentation is an important task because these three types of signals are inherently different in nature \cite{Wolfe2002} and require different types of processing and/or coding schemes. For example, a good compression scheme for speech may not be good for compressing music. Also, the signal processing steps used for these two types of media are likely to be very different. So, correctly identifying the type of media before further processing should be considered a very important task. 
 
-On the advent of widespread use of the internet, it is now possible to build large media databases from user-contributed data. However, labels for the collected data are rarely available. Manual media labeling can be both expensive and time-consuming. So, a reliable method is required to automate the indexing of large media databases. It is intuitive to first classify/ segment the media into broad categories such as speech, music and noise which may be followed by further fine-grained classification/segmentation procedure (for example, into different musical genres). 
+With the advent of widespread use of the internet, it is now possible to build large media databases from user-contributed data. However, labels for the collected data are rarely available. Manual media labeling can be both expensive and time-consuming. So, a reliable method is required to automate the indexing of large media databases. It is intuitive to first classify/ segment the media into broad categories such as speech, music and noise which may be followed by further fine-grained classification/segmentation procedure (for example, into different musical genres). 
 
-The above discussion suggests that it is desirable to bring the classification/segmentation of media into speech, music and noise under a single framework. Engineering appropriate features for this problem can be both difficult and cumbersome. For example, a capella music has features similar to speech, whereas rock and roll music may have features similar to noise. So, we tried to solve this problem from general purpose features (such as MFCC and spectrogram) rather than artificially formulated task-specific features. 
+The above discussion suggests that it is desirable to bring the classification/segmentation of media into speech, music and noise under a single framework. In recent years deep learning \cite{LeCun2015} algorithms have achieved unprecedented success in numerous classification problems, without any need for careful feature selection. Especially, deep convolutional neural networks have set new frontiers in many fields such as image and audio classification and segmentation. However, deep neural networks are generally known to be more computationally expensive and slower than other more conventional models. These models often need large-scale parallelization in GPUs for faster implementation. Since classification/segmentation is often set as a pre-processing step in an audio processing pipeline, it needs to be fast enough to prevent the delay in further processing. Also, the computational resources are limited in many scenarios such as in mobile devices and embedded systems where it is unreasonable to waste too much resource in the preprocessing step. This is where we put forth our contribution.
 
-In recent years deep learning [10] algorithms have achieved unprecedented success in numerous classification problems, without any need for careful feature selection. Especially, deep convolutional neural networks have set new frontiers in many fields such as image and audio classification and segmentation. However, deep neural networks are generally known to be more computationally expensive and slower than other more conventional models. These models often need large-scale parallelization in GPUs for faster implementation. Since classification/segmentation is often set as a pre-processing step in an audio processing pipeline, it needs to be fast enough to prevent the delay in further processing. Also, the computational resources are limited in many scenarios such as in mobile devices and embedded systems where it is unreasonable to waste too much resource in the preprocessing step. This is where we put forth our contribution. 
-
-Such situations may arise when real-time audio classification/segmentation needs to be performed - e.g., in hearing aids, or at the frontend of real-time audio compression systems.
-
-In this work, we present SwishNet, a carefully designed novel 1D convolutional deep neural network architecture which can achieve a high level of accuracy while also being fast, lightweight and memory efficient, even without large-scale parallelization in a GPU. Also, the deep convolutional nature of the architecture allows it to pick up contextual information from previous frames effectively. It can be trained on a sufficiently diverse dataset such as the MUSAN corpus without the need for any specific feature engineering. And in the presence of new data (e.g. new musical genres), it can simply be fine-tuned without the need for retraining from scratch.
+Recently, it has been shown that for coarse grained audio classification tasks a fast and lean 1D CNN applied on derived features can show performance close to that of a 2D CNN - the SwishNet architecture \cite{hussain2018swishnet}. Although, this architecture has shown good performance on a clean and less diverse dataset such as the MUSAN \cite{Snyder2015} dataset, it's performance on a more difficult and diversified realistic setting has not been verified. In this work, we further explored the use of lightweight CNN architecutres for audio classification task but in a more diverse and realistic setting - on the AudioSet dataset \cite{gemmeke2017audio}, which is a dataset of 2.1 million annotated audio clips derived from youtube videos. The AudioSet ontology contains 527 different classes, but it does not directly annotate clips into suprerclasses such as speech, music and noise. Instead, it labels each clip with a set of subclasses. We defined these superclasses in the ontology which gives us plausible superclass labels for the clips. However, due to mistakes/missing annotations the actual superclass maybe wrong/ambiguous. So we, manually annotated a set of gold standard labels for around 12000 clips. We devised a new network architecture SwishNetV2 which is an improvement on the SwishNet architecture and directly applies on log mel spectrogram. We verified the performance of this model on the AudioSet dataset with manually verified gold standard labels. We also developed a method for including data with unchecked noisy labels from AudioSet which improves classification performance.
 
 \begin{figure*}[!t]
 	\centering
 	\includegraphics[width=\textwidth, trim= 0 230 0 100, clip]{Network.pdf}
-	\caption{Network Architecture of SwishNet-slim}
-	\label{fig:swishnet}
-\end{figure*}
-
-\begin{figure*}[!t]
-	\centering
-	\includegraphics[width=\textwidth, trim= 0 450 0 0, clip]{Pipeline.pdf}
-	\caption{Network Architecture of SwishNet-slim}
+	\caption{Network Architecture of SwishNetV2}
 	\label{fig:swishnet}
 \end{figure*}
 
@@ -109,9 +99,14 @@ Scheirer et al [3] introduced many more features into audio classification and p
 Many other works have been done to enhance audio classification algorithms. In [7], audio recordings are classified into speech, silence, laughter and non-speech sounds, in order to segment discussion recordings in meetings. The accuracy of the segmentation resulted using his method varies considerably for different types of recording. In the work by Zhang and Kuo [8], pitch tracking methods are introduced to discriminate audio recordings into more classes, such as songs, speeches over music, with a heuristic-based model. Accuracy of above 90\% is reported. Srinivasan et al [5], try to detect and classify audio that consists of mixed classes, such as combinations of speech and music together with background sound. The accuracy of classification is over 80\%. 
 
 \section{Methodology}
-
+\begin{figure*}[!t]
+	\centering
+	\includegraphics[width=\textwidth, trim= 0 450 0 0, clip]{Pipeline.pdf}
+	\caption{Network Architecture of SwishNet-slim}
+	\label{fig:swishnet}
+\end{figure*}
 \subsection{Data Collection}
-The Audioset [9] ontology was used to identify fine-grained sound event classes (source). We combined the fine-grained event classes into 3 major superclasses - speech, music and noise. We define each superclass uniquely by saying that a particular audio segment must not contain events from other superclasses, so that there is no ambiguity in classification. 
+The Audioset \cite{gemmeke2017audio} ontology was used to identify fine-grained sound event classes (source). We combined the fine-grained event classes into 3 major superclasses - speech, music and noise. We define each superclass uniquely by saying that a particular audio segment must not contain events from other superclasses, so that there is no ambiguity in classification. 
 
 We downloaded the annotations of the YouTube video segments (source). Each segment is assigned multiple sound event tags. We defined plausible superclasses, based on these tags. If a clip contains only the subclasses of a given superclass (speech/music/noise) it is said to belong to that plausible superclass. If the superclass is ambiguous, we ignore that clip. But due to mistakes in annotations, missing annotations and human errors, the actual superclass may still be ambiguous or even wrong. So, the labels assigned at this point are noisy. 
 
