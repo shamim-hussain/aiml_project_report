@@ -153,8 +153,19 @@ VGG16 trained really fast when initialized with ImageNet weights and reached con
 \input{tab_classperm}
 \input{tab_conmat}
 
+the network structures fixed for all tests. Table \ref{tab:speed} compares the sizes prediction speeds of the three networks as well as the baseline models. To simulate comparison of real-time computational cost, we fixed batch size to 1 for all models and compared their speed on CPU and GPU. Our CPU was Core i7 8700K, a 6 core processor and our GPU was NVIDIA GTX 1080ti and the networks were implemented in PyTorch \cite{paszke2019pytorch}.
+
+We see that, similar to SwishNet, SwishNetV2 is fast on both CPU and GPU. SwishNet is approximately 10 times faster than VGG16 on CPU, due to its low parallelization requirement. Also in terms of number of pamameters and weight file size it is about 1000 times smaller than VGG16.
+
+The classification results are presented in Table \ref{tab:classperm} and \ref{tab:conmat}. We see that SwishNet performs very close to VGG16 in terms of accuracy, with the gap being only around 2\%. The performance improves with increasing clip length. Also we see that the two stage of our training method by training on combined dataset and finetuning on gold standard dataset improves classification performance.
+
+From the confusion matrices, we can see that recall for noise is low for both models, especially for smaller clip lengths, even though the speech/non-non-speech discrimination accuracy is high for all clip lengths. This result indicates that for smaller contextual windows, it is hard to differentiate noise from music. This is because, some of the noises, such as bells tolling or phones ringing are slightly musical in nature and short segments of music may sound like noise. So, a longer context is necessary for discriminating noise from music.
 
 \section{Conclusion and Future Work}
+We manually added Gold Standard labels to AudioSet clips for speech, music and noise. We designed an improved version of SwishNet architecture – SwishNetV2 which is applied on log mel spectrum directly and achieved better accuracy. Also, we developed a scheme for training on noisy labels and fine tuning on gold standard dataset and showed that it improves accuracy. We showed that lean, fast CNN such as SwishNetV2 come very close in terms of accuracy to big 2D CNNs such as VGG16, even in such a diverse dataset as AudioSet.
+
+In a future work we intend to include more unchecked data which should result in better performance. Also we intend to utilize unchecked data in a more sophisticated manner. One possibility is distillation from ensemble of models. We intend to add clips from other datasets into training. Possible candidates are FSD50K \cite{fonseca2020fsd50k} and MUSAN \cite{Snyder2015}. Additionally, we intend to try and combine different features, including MFCC, log Mel spectrogram, and also NMF based features.
+
 
 
 \printbibliography
